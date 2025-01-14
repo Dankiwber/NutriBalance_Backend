@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const pool = require('../db'); // 引入数据库连接池
+const pool = require('../db'); 
 const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 // (?=.*[A-Z]) at least one upper letter

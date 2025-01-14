@@ -2,19 +2,39 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db'); // 引入数据库连接
 const { registerUser } = require('../services/registerUser'); // 注意解构方式
+const { loginUser } = require('../services/loginUser');
+const authMiddleware = require('../middlewares/authMiddleware'); // 引入中间件
+const tokenBlacklist = require('../blacklist'); // 引入黑名单
 
+
+// 注销路由
+router.post('/logout', authMiddleware, (req, res) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) {
+        return res.status(400).json({ message: '缺少令牌' });
+    }
+
+    tokenBlacklist.add(token); // 将 Token 添加到黑名单
+    res.json({ message: '注销成功' });
+});
+
+// 示例受保护路由：获取用户个人信息
+router.get('/profile', authMiddleware, (req, res) => {
+    // 通过中间件，req.user 中已经包含了解码后的用户信息
+    res.json({
+        message: 'Token is all good',
+        user: req.user, // 返回用户信息
+    });
+});
 // 获取所有用户数据
-router.get('/login', async (req, res) => {
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body; // 从请求体中获取用户输入
+
     try {
-        // 从数据库中查询所有用户
-        const result = await pool.query('SELECT password FROM users WHERE email = $1', ['8888888@qq.com']);
-        if(result.rows.length == 0){
-            throw new Error('邮箱bu存在');
-        }
-        res.json(result.rows); // 返回查询结果
+        const result = await loginUser(email, password); // 调用登录逻辑
+        res.status(200).json(result); // 成功返回 JWT 和提示信息
     } catch (err) {
-        console.error('Error fetching users:', err.message);
-        res.status(500).json({ error: err.message });
+        res.status(400).json({ error: err.message }); // 登录失败返回错误信息
     }
 });
  

@@ -1,10 +1,11 @@
 const express = require('express');
 const userRoutes = require('./routes/users'); // 引入用户路由
 const pool = require('./db'); // 引入数据库连接
+require('dotenv').config(); 
 
 const app = express();
-const PORT = 3000;
-const HOST = '0.0.0.0';
+const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
 
 // 中间件
 app.use(express.json()); // 解析 JSON 请求体
