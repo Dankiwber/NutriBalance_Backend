@@ -1,16 +1,17 @@
-// 使用 Set 来存储被禁用的 Token
-const tokenBlacklist = new Set();
+const redis = require('./services/redisClient');
 
 module.exports = {
-    // 添加 Token 到黑名单
-    add: (token) => tokenBlacklist.add(token),
+    // 添加 Token 到黑名单，设置过期时间
+    add: async (token, exp) => {
+        const ttl = exp - Math.floor(Date.now() / 1000);
+        if (ttl > 0) {
+            await redis.setex(`blacklist:${token}`, ttl, 'blacklisted');
+        }
+    },
 
     // 检查 Token 是否在黑名单中
-    has: (token) => tokenBlacklist.has(token),
-
-    // 删除 Token（可选，用于定期清理过期令牌）
-    remove: (token) => tokenBlacklist.delete(token),
-
-    // 查看当前黑名单（调试用）
-    getAll: () => Array.from(tokenBlacklist),
+    has: async (token) => {
+        const result = await redis.get(`blacklist:${token}`);
+        return result === 'blacklisted';
+    },
 };
