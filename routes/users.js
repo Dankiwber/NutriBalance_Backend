@@ -8,14 +8,20 @@ const tokenBlacklist = require('../blacklist'); // 引入黑名单
 
 
 // 注销路由
-router.post('/logout', authMiddleware, (req, res) => {
+router.post('/logout', authMiddleware, async (req, res) => {
     const token = req.headers['authorization']?.split(' ')[1];
+
     if (!token) {
-        return res.status(400).json({ message: '缺少令牌' });
+        return res.status(400).json({ message: 'Token is required' });
     }
 
-    tokenBlacklist.add(token); // 将 Token 添加到黑名单
-    res.json({ message: '注销成功' });
+    try {
+        const decoded = jwt.verify(token, 'your-secret-key'); // 解码 Token 获取过期时间
+        await tokenBlacklist.add(token, decoded.exp); // 添加到 Redis 黑名单
+        res.status(200).json({ message: 'Logout successful' });
+    } catch (err) {
+        res.status(400).json({ error: 'Invalid token' });
+    }
 });
 
 // 示例受保护路由：获取用户个人信息
