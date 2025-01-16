@@ -12,7 +12,7 @@ const authMiddleware = (req, res, next) => {
     if (!authHeader) {
         return res.status(401).json({ message: '未授权，请登录' });
     }
-
+    
     // 提取 Bearer 后的 Token
     const token = authHeader.split(' ')[1];
     if (!token || tokenBlacklist.has(token)) {
