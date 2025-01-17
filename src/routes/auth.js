@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const pool = require('../db'); // 引入数据库连接
+const pool = require('../config/db'); // 引入数据库连接
 const { registerUser } = require('../services/registerUser'); // 注意解构方式
 const { loginUser } = require('../services/loginUser');
 const authMiddleware = require('../middlewares/authMiddleware'); // 引入中间件
-const { add, has } = require('../blacklist'); // 引入黑名单工具
+const { add, has } = require('../services/Token_blacklist'); // 引入黑名单工具
 const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post('/logout', async (req, res) => {

@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { has } = require('../blacklist');
+const { has } = require('../services/Token_blacklist');
 require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
