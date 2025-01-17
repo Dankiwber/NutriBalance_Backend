@@ -1,26 +1,41 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const pool = require('../db'); // 引入数据库连接
 const { registerUser } = require('../services/registerUser'); // 注意解构方式
 const { loginUser } = require('../services/loginUser');
 const authMiddleware = require('../middlewares/authMiddleware'); // 引入中间件
-const tokenBlacklist = require('../blacklist'); // 引入黑名单
+const { add, has } = require('../blacklist'); // 引入黑名单工具
+const JWT_SECRET = process.env.JWT_SECRET;
 
-
-// 注销路由
-router.post('/logout', authMiddleware, async (req, res) => {
+router.post('/logout', async (req, res) => {
     const token = req.headers['authorization']?.split(' ')[1];
-
     if (!token) {
         return res.status(400).json({ message: 'Token is required' });
     }
 
     try {
-        const decoded = jwt.verify(token, 'your-secret-key'); // 解码 Token 获取过期时间
-        await tokenBlacklist.add(token, decoded.exp); // 添加到 Redis 黑名单
+        // 验证令牌有效性
+        const decoded = jwt.verify(token, JWT_SECRET);
+        console.log('Decoded Token:', decoded);
+
+        // 检查 token 是否已在黑名单
+        const isBlacklisted = await has(token);
+        if (isBlacklisted) {
+            console.warn('Token already in blacklist, skipping addition.');
+            return res.status(400).json({ message: 'Token already in blacklist' });
+        }
+
+        // 将 token 添加到黑名单
+        await add(token, decoded.exp);
         res.status(200).json({ message: 'Logout successful' });
     } catch (err) {
-        res.status(400).json({ error: 'Invalid token' });
+        if (err.name === 'TokenExpiredError') {
+            console.warn('Token has expired.');
+            return res.status(400).json({ message: 'Token is already expired' });
+        }
+        console.error('Logout Error:', err.message);
+        res.status(400).json({ error: 'Invalid or expired token' });
     }
 });
 
