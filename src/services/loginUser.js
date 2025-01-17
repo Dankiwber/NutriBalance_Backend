@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const verifyPassword = async (password, hashedPassword) => {
     const isMatch = await bcrypt.compare(password, hashedPassword);
     if (!isMatch) {
-        throw new Error('Invalid credentials');
+        throw new Error('Password is incorrect');
     }
 };
 
@@ -28,9 +28,8 @@ const loginUser = async (email, password) => {
     try {
         const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
         if (result.rows.length === 0) {
-            throw new Error('Invalid credentials');
+            throw new Error('The email is not register');
         }
-
         const user = result.rows[0];
         
         //if (!user.is_active) {
@@ -42,8 +41,7 @@ const loginUser = async (email, password) => {
 
         return { message: 'Login successfully', token };
     } catch (err) {
-        console.error('Login error:', err.message);
-        throw new Error('An error occurred while logging in');
+        throw new Error(err.message);
     }
 };
 

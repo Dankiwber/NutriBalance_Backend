@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const pool = require('../config/db'); 
 const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const { sendVerificationEmail } = require('./genVerificationEmail');
 
 // (?=.*[A-Z]) at least one upper letter
 // (?=.*[a-z]) at least one lower letter
@@ -28,10 +29,12 @@ const registerUser = async (username, email, password) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // insert new user
-        await pool.query(
-            'INSERT INTO users (username, email, password) VALUES ($1, $2, $3)',
+        const userInsertResult = await pool.query(
+            'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id',
             [username, email, hashedPassword]
         );
+        const userId = userInsertResult.rows[0].id;
+        await sendVerificationEmail(userId, email);
 
         return { message: 'Your account has been successfully registered' };
     } catch (err) {
