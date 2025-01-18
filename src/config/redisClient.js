@@ -8,12 +8,12 @@ const redis = new Redis({
 
 // Redis 连接成功
 redis.on('connect', () => {
-    console.log('Redis 连接成功');
+    console.log('Redis connected');
 });
 
 // Redis 连接出错
 redis.on('error', (err) => {
-    console.error('Redis 连接失败:', err);
+    console.error('Redis connect fail:', err);
 });
 
 module.exports = redis;

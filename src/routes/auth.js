@@ -39,6 +39,47 @@ router.post('/logout', async (req, res) => {
     }
 });
 
+const path = require('path'); // Node.js 模块，用于处理文件路径
+
+router.get('/verify-email', async (req, res) => {
+    const { token } = req.query; // 从查询参数中获取令牌
+
+    try {
+        // 检查令牌是否存在
+        const result = await pool.query(
+            'SELECT user_id, expires_at FROM verification_tokens WHERE token = $1',
+            [token]
+        );
+
+        if (result.rows.length === 0) {
+            // 如果令牌无效，返回错误页面
+            return res.status(400).sendFile(path.join(__dirname, '../../public/tokenExpired.html'));
+        }
+
+        const { user_id, expires_at } = result.rows[0];
+
+        
+        if (new Date() > new Date(expires_at)) {
+            // 如果令牌已过期，返回过期页面
+            return res.status(400).sendFile(path.join(__dirname, '../../public/tokenExpired.html'));
+        }
+
+        // 更新用户的 is_verify 字段为 TRUE
+        await pool.query('UPDATE users SET is_verify = TRUE WHERE id = $1', [user_id]);
+
+        // 删除已使用的验证令牌
+        await pool.query('DELETE FROM verification_tokens WHERE token = $1', [token]);
+
+        // 如果验证成功，返回成功页面
+        return res.status(200).sendFile(path.join(__dirname, '../../public/emailVerified.html'));
+    } catch (err) {
+        console.error('Error verifying email:', err.message);
+        // 如果发生服务器错误，返回通用错误页面
+        return res.status(500).send('<h1>Internal Server Error</h1>');
+    }
+});
+
+
 // 示例受保护路由：获取用户个人信息
 router.get('/profile', authMiddleware, (req, res) => {
     // 通过中间件，req.user 中已经包含了解码后的用户信息

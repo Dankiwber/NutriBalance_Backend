@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const pool = require('../config/db')
 const transporter = require('../config/VerifyEmail');
 require('dotenv').config();
-
+const LOCAL_IP = process.env.LOCAL_IP;
 const VerifyToken = async (userId) => {
     try{
         const token = crypto.randomBytes(32).toString('hex')
@@ -28,15 +28,15 @@ const sendVerificationEmail = async (userId, email) => {
         const token = await VerifyToken(userId);
 
         // 构造验证链接
-        const verificationLink = `http://${process.env.BACKEND_DOMAIN}/verify-email?token=${token}`;
+        const verificationLink = `http://${LOCAL_IP}:3000/api/verify-email?token=${token}`;
 
         // 邮件内容
         const mailOptions = {
             from: process.env.EMAIL_USER, // 发送方
             to: email,                   // 接收方
-            subject: '请验证您的邮箱',       // 邮件主题
+            subject: 'Verify your email',       // 邮件主题
             html: `
-                <p>感谢注册！请点击以下链接验证您的邮箱（5分钟内有效）：</p>
+                <p>Thank you for registering! Please click the link below to verify your email (valid for 5 minutes):</p>
                 <a href="${verificationLink}">${verificationLink}</a>
             `
         };

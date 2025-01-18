@@ -36,7 +36,7 @@ const registerUser = async (username, email, password) => {
         const userId = userInsertResult.rows[0].id;
         await sendVerificationEmail(userId, email);
 
-        return { message: 'Your account has been successfully registered' };
+        return { message: 'A verification email has been sent to your email address, Please check.' };
     } catch (err) {
         console.error(err.message);
         throw err;

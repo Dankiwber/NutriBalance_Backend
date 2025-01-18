@@ -3,7 +3,7 @@ const cors = require('cors')
 const authRoutes = require('./routes/auth'); // 引入用户路由
 const pool = require('./config/db'); // 引入数据库连接
 require('dotenv').config(); 
-
+const cleanupUnverifiedUsers = require('./services/cleanUp');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -14,7 +14,7 @@ app.use(cors({
 app.use(express.json()); // 解析 JSON 请求体
 
 app.get('/', (req, res) => {
-    res.send('Welcome to the API! Use /api/register to register or /api/test-db to test the database connection.');
+    res.send('Welcome to the API! Use /api/register to register or /test-db to test the database connection.');
 });
 
 
@@ -30,6 +30,9 @@ app.get('/test-db', async (req, res) => {
         res.status(500).json({ error: 'Database connection failed' });
     }
 });
+setInterval(() => {
+    cleanupUnverifiedUsers();
+}, 10 * 60 * 1000); // 每 10 分钟执行一次
 // 启动服务器
 app.listen(PORT, HOST, () => {
     console.log(`Server running on http://${HOST}:${PORT}`);
