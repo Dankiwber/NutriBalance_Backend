@@ -53,28 +53,34 @@ const sendVerificationEmail = async (userId, email) => {
 const sendForgetPassEmail = async (userId, email) => {
     try {
         // 调用生成令牌的函数
-        const token = await VerifyToken(userId);
-
+        const token = jwt.sign(
+            {
+                email: user.email,
+                exp: Math.floor(Date.now() / 1000) + 60 * 5 * 1, // Token 5分钟后过期
+            },
+            JWT_SECRET
+        );
         // 构造验证链接
-        const verificationLink = `http://${LOCAL_IP}:3000/api/verify-email?token=${token}`;
+        const verificationLink = `http://${LOCAL_IP}:3000/api/reset-password?token=${token}`;
 
         // 邮件内容
         const mailOptions = {
             from: process.env.EMAIL_USER, // 发送方
             to: email,                   // 接收方
-            subject: 'Verify your email',       // 邮件主题
+            subject: 'Reset your NutriBalance password',       // 邮件主题
             html: `
-                <p>Thank you for registering! Please click the link below to verify your email (valid for 5 minutes):</p>
+                <p>You can change your password by clicking the Link below: (valid for 5 minutes):</p>
                 <a href="${verificationLink}">${verificationLink}</a>
             `
         };
 
         // 发送邮件
         await transporter.sendMail(mailOptions);
-        console.log('Verification email sent to:', email);
+        console.log('Forget password email sent to:', email);
+        console.log('Forget password token is', token);
     } catch (err) {
-        console.error('Error sending verification email:', err.message);
-        throw new Error('Failed to send verification email.');
+        console.error('Error Forget password email:', err.message);
+        throw new Error('Failed to send Forget password email.');
     }
 };
 
