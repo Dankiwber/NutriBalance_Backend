@@ -32,14 +32,14 @@ const loginUser = async (email, password) => {
         }
         const user = result.rows[0];
         
-        if (!user.is_active) {
+        if (!user.is_verify) {
             throw new Error('Account is inactive. Please contact support.');
         }
 
         await verifyPassword(password, user.password);
         const token = generateToken(user);
-
         return { message: 'Login successfully', token };
+        console.log("T2")
     } catch (err) {
         throw new Error(err.message);
     }
