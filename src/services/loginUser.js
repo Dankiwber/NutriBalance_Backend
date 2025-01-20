@@ -39,7 +39,7 @@ const loginUser = async (email, password) => {
         await verifyPassword(password, user.password);
         const token = generateToken(user);
         return { message: 'Login successfully', token };
-        console.log("T2")
+       
     } catch (err) {
         throw new Error(err.message);
     }

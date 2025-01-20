@@ -33,7 +33,8 @@ app.get('/test-db', async (req, res) => {
 });
 setInterval(() => {
     cleanupUnverifiedUsers();
-}, 60 * 60 * 1000); // 每 10 分钟执行一次
+    
+}, 60 * 60 * 1000); // 每 60 分钟执行一次
 
 // 启动服务器
 app.listen(PORT, HOST, () => {

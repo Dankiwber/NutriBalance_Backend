@@ -1,9 +1,10 @@
 const Redis = require('ioredis');
+require('dotenv').config();
 
 // 创建 Redis 客户端，默认连接到本地 Redis（localhost:6379）
 const redis = new Redis({
-    host: '127.0.0.1', // Redis 主机地址
-    port: 6379,        // Redis 端口
+    host: process.env.REDIS_HOST || 'localhost',  // 使用 docker-compose 提供的服务名
+    port: process.env.REDIS_PORT || 6379
 });
 
 // Redis 连接成功
