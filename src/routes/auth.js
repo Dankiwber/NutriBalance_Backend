@@ -6,7 +6,6 @@ const { registerUser } = require('../services/registerUser'); // 注意解构方
 const { loginUser } = require('../services/loginUser');
 const authMiddleware = require('../middlewares/authMiddleware'); // 引入中间件
 const { add, has } = require('../services/Token_blacklist'); // 引入黑名单工具
-const redis = require('../config/redisClient');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post('/logout', async (req, res) => {
@@ -47,13 +46,18 @@ router.get('/verify-email', async (req, res) => {
 
     try {
         // 检查令牌是否存在
-        const userId = await redis.get(`resetPassword:${token}`);
+        const result = await pool.query(
+            'SELECT user_id, expires_at FROM verification_tokens WHERE token = $1',
+            [token]
+        );
 
-        if (!userId) {
+        if (result.rows.length === 0) {
             // 如果令牌无效，返回错误页面
-            await pool.query('DELETE FROM users WHERE id = !', [token]);
             return res.status(400).sendFile(path.join(__dirname, '../../public/tokenExpired.html'));
         }
+
+        const { user_id, expires_at } = result.rows[0];
+
         
         if (new Date() > new Date(expires_at)) {
             // 如果令牌已过期，返回过期页面
