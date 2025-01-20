@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors')
 const authRoutes = require('./routes/auth'); // 引入用户路由
+const userRoutes = require('./routes/user'); // 引入用户路由
 const pool = require('./config/db'); // 引入数据库连接
 require('dotenv').config(); 
 const cleanupUnverifiedUsers = require('./services/cleanUp');
@@ -20,7 +21,7 @@ app.get('/', (req, res) => {
 
 // 挂载用户相关的路由
 app.use('/api', authRoutes);
-
+app.use('/api', userRoutes);
 app.get('/test-db', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW()');

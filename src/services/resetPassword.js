@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const pool = require('../config/db');
-const redis = require('./services/redisClient');
-const transporter = require('./services/genVerificationEmail');
+const redis = require('../config/redisClient');
+const transporter = require('../config/VerifyEmail');
 require('dotenv').config();
 const LOCAL_IP = process.env.LOCAL_IP;
 

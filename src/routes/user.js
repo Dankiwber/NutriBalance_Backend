@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/db'); // 引入数据库连接
-const redis = require('../services/redisClient');
+const redis = require('../config/redisClient');
 const bcrypt = require('bcryptjs');
 const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-const { requestPasswordReset } = require('../services/passwordReset');
+const { requestPasswordReset } = require('../services/resetPassword');
 
 router.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
@@ -20,7 +20,7 @@ router.post('/forgot-password', async (req, res) => {
 // 处理用户访问重置链接
 router.post('/reset-password', async (req, res) => {
     const { token, newPassword } = req.body;
-
+    console.log(token)
     try {
         // 从 Redis 获取与令牌对应的 email
         const email = await redis.get(`resetPassword:${token}`);
