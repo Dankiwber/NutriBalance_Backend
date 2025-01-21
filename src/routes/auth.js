@@ -53,6 +53,7 @@ router.get('/verify-email', async (req, res) => {
 
         if (result.rows.length === 0) {
             // 如果令牌无效，返回错误页面
+            
             return res.status(400).sendFile(path.join(__dirname, '../../public/tokenExpired.html'));
         }
 
@@ -61,6 +62,7 @@ router.get('/verify-email', async (req, res) => {
         
         if (new Date() > new Date(expires_at)) {
             // 如果令牌已过期，返回过期页面
+            await pool.query('DELETE FROM verification_tokens WHERE token = $1', [token]);
             return res.status(400).sendFile(path.join(__dirname, '../../public/tokenExpired.html'));
         }
 
