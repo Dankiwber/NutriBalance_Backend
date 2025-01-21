@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 const { verifyResetCode, resetPassword, requestPasswordReset  } = require('../services/resetPassword');
 
+// 点击forget password后访问的api
 router.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
 
@@ -17,7 +18,7 @@ router.post('/forgot-password', async (req, res) => {
     }
 });
 
-// 处理用户访问重置链接
+// 用于验证“重置验证码” 的api
 router.post('/verify-reset-code', async (req, res) => {
     const { email, code } = req.body;
     try {
@@ -27,10 +28,11 @@ router.post('/verify-reset-code', async (req, res) => {
         res.status(400).json({ error: err.message });
     }
 });
-
+// “重置验证码” 通过验证后重设密码的api
 router.post('/reset-password', async (req, res) => {
     const { email, newPassword } = req.body;
     try {
+        console.log("h")
         const response = await resetPassword(email, newPassword);
         res.status(200).json(response);
     } catch (err) {

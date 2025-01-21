@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const pool = require('../config/db');
 const redis = require('../config/redisClient');
 const transporter = require('../config/VerifyEmail');
+const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 require('dotenv').config();
 const LOCAL_IP = process.env.LOCAL_IP;
 
@@ -30,20 +31,31 @@ const verifyResetCode = async (email, code) => {
 
 
 const resetPassword = async (email, newPassword) => {
-    if (newPassword.length < 8) {
-        throw new Error('Password must be at least 8 characters long.');
-    }
-
+    
     try {
+        if (!passwordRegex.test(newPassword)){
+            throw new Error('Password Format incorrect.');
+        }
+        result = await pool.query("SELECT password FROM users WHERE email = $1", [email])
+        const oldPassword = result.rows[0].password;
+        console.log(oldPassword)
+        const isMatch = await bcrypt.compare(newPassword, oldPassword)
+        
+        if (isMatch) {
+            throw new Error('New password cannot be the same as your old password')
+        }else{
+            console.log("not match")
+        }
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-
+        
         await pool.query('UPDATE users SET password = $1 WHERE email = $2', [hashedPassword, email]);
 
         return { message: 'Password reset successfully. You can now log in with your new password.' };
     } catch (err) {
+        console.log(err)
         throw new Error('Failed to reset password.');
     }
-};
+}; 
 
 
 const requestPasswordReset = async (email) => {
