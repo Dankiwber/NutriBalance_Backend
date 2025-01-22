@@ -5,7 +5,7 @@ const cleanupUnverifiedUsers = async () => {
     try {
         const currentTime = new Date();
 
-        // 删除超过 5 分钟未验证的用户
+        // 删除超过 15 分钟未验证的用户
         const result = await pool.query(
             `DELETE FROM users 
              WHERE is_verify = FALSE 

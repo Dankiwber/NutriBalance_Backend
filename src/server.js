@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 
 // 挂载用户相关的路由
 app.use('/api', authRoutes);
-app.use('/api', userRoutes);
+app.use('/api', userRoutes); 
 app.get('/test-db', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW()');
@@ -34,7 +34,7 @@ app.get('/test-db', async (req, res) => {
 setInterval(() => {
     cleanupUnverifiedUsers();
     
-}, 60 * 60 * 1000); // 每 60 分钟执行一次
+},  30 * 60 * 1000); // 每 60 分钟执行一次
 
 // 启动服务器
 app.listen(PORT, HOST, () => {

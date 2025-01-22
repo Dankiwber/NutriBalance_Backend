@@ -32,7 +32,6 @@ router.post('/verify-reset-code', async (req, res) => {
 router.post('/reset-password', async (req, res) => {
     const { email, newPassword } = req.body;
     try {
-        console.log("h")
         const response = await resetPassword(email, newPassword);
         res.status(200).json(response);
     } catch (err) {

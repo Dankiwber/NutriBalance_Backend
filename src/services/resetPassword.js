@@ -25,7 +25,7 @@ const verifyResetCode = async (email, code) => {
 
         return { message: 'Verification successful, you can reset your password now.' };
     } catch (err) {
-        throw new Error(err.message);
+        throw new Error(err.message || 'Something went wrong, please try again');
     }
 };
 
@@ -33,12 +33,13 @@ const verifyResetCode = async (email, code) => {
 const resetPassword = async (email, newPassword) => {
     
     try {
-        if (!passwordRegex.test(newPassword)){
+        if (!passwordRegex.test(newPassword) || email===""){
             throw new Error('Password Format incorrect.');
         }
         result = await pool.query("SELECT password FROM users WHERE email = $1", [email])
+        
         const oldPassword = result.rows[0].password;
-        console.log(oldPassword)
+        
         const isMatch = await bcrypt.compare(newPassword, oldPassword)
         
         if (isMatch) {
@@ -52,8 +53,7 @@ const resetPassword = async (email, newPassword) => {
 
         return { message: 'Password reset successfully. You can now log in with your new password.' };
     } catch (err) {
-        console.log(err)
-        throw new Error('Failed to reset password.');
+        throw new Error(err.message || 'Failed to reset password.');
     }
 }; 
 
@@ -62,6 +62,7 @@ const requestPasswordReset = async (email) => {
     try {
         // 检查邮箱是否存在
         const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        console.log(result.rows)
         if (result.rows.length === 0) {
             throw new Error('Email not registered.');
         }

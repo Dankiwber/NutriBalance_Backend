@@ -8,7 +8,7 @@ const VerifyToken = async (userId) => {
     try{
         const token = crypto.randomBytes(32).toString('hex')
 
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
         await pool.query(
             'INSERT INTO verification_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
@@ -36,7 +36,7 @@ const sendVerificationEmail = async (userId, email) => {
             to: email,                   // 接收方
             subject: 'Verify your email',       // 邮件主题
             html: `
-                <p>Thank you for registering! Please click the link below to verify your email (valid for 5 minutes):</p>
+                <p>Thank you for registering! Please click the link below to verify your email (valid for 15 minutes):</p>
                 <a href="${verificationLink}">${verificationLink}</a>
             `
         };
