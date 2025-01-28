@@ -11,7 +11,6 @@ const bcrypt = require('bcryptjs');
 const verifyResetCode = async (email, code) => {
     try {
         const storedCode = await redis.get(`resetPassword:${email}`);
-        
         if (!storedCode) {
             throw new Error('Verification code expired or not found.');
         }
@@ -33,7 +32,7 @@ const verifyResetCode = async (email, code) => {
 const resetPassword = async (email, newPassword) => {
     
     try {
-        if (!passwordRegex.test(newPassword) || email===""){
+        if (!passwordRegex.test(newPassword) || !email){
             throw new Error('Password Format incorrect.');
         }
         result = await pool.query("SELECT password FROM users WHERE email = $1", [email])
