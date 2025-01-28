@@ -5,8 +5,9 @@ const redis = require('../config/redisClient');
 const bcrypt = require('bcryptjs');
 const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 const { verifyResetCode, resetPassword, requestPasswordReset  } = require('../services/resetPassword');
-
+const { chatbot } = require('../services/deepseek_chatbot')
 // 点击forget password后访问的api
+
 router.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
 
@@ -35,6 +36,17 @@ router.post('/reset-password', async (req, res) => {
         const response = await resetPassword(email, newPassword);
         res.status(200).json(response);
     } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+router.post('/query_process', async (req, res) => {
+    const { query } = req.body;
+    try {
+        const response = await chatbot(query);
+        res.status(200).json(response);
+    } catch (err) {
+        console.log(err)
         res.status(400).json({ error: err.message });
     }
 });
