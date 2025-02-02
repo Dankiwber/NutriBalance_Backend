@@ -1,9 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/db'); // 引入数据库连接
-const redis = require('../config/redisClient');
-const bcrypt = require('bcryptjs');
-const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const { ERROR_MESSAGES } = require('../config/constants');
 const { verifyResetCode, resetPassword, requestPasswordReset  } = require('../services/resetPassword');
 const { chatbot } = require('../services/deepseek_chatbot')
 // 点击forget password后访问的api
@@ -41,14 +38,24 @@ router.post('/reset-password', async (req, res) => {
 });
 
 router.post('/query_process', async (req, res) => {
-    const { query } = req.body;
-    try {
-        const response = await chatbot(query);
-        res.status(200).json(response);
-    } catch (err) {
-        console.log(err)
-        res.status(400).json({ error: err.message });
-    }
-});
+  const { query } = req.body;
+  
+  if (!query || typeof query !== 'string') {
+    return res.status(400).json({ error: 'Invalid request format' });
+  }
 
+  try {
+    const response = await chatbot(query);
+    res.status(200).json(response);
+  } catch (err) {
+    const statusCode = err.message === ERROR_MESSAGES.INVALID_INPUT ? 400 : 500;
+    const clientMessage = statusCode === 500 ? ERROR_MESSAGES.SERVER_ERROR : err.message;
+    
+    console.error(`API Error [${statusCode}]: ${err.message}`);
+    res.status(statusCode).json({ 
+      error: clientMessage,
+      ...(process.env.NODE_ENV === 'development' && { debug: err.stack })
+    });
+  }
+});
 module.exports = router;

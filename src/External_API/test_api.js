@@ -1,29 +1,35 @@
-
-
 const obj = {
-    apples: {
-      total_intake: 625,
-      total_calories: 325,
-      fat: 1.25,
-      carbs: 86.25,
-      protein: 1.25
-    },
-    bread: {
-      total_intake: 150,
-      total_calories: 390,
-      fat: 4.5,
-      carbs: 72,
-      protein: 12
-    },
-    cola: {
-      total_intake: 355,
-      total_calories: 140,
-      fat: 0,
-      carbs: 39,
-      protein: 0
-    }
+  "cola candy": {
+      "total_intake": "50g",
+      "total_calories": "200 cal",
+      "fat": "0 g",
+      "carbs": "50 g",
+      "protein": "0 g"
+  },
+  "bread": {
+      "total_intake": "150g",
+      "total_calories": "390 cal",
+      "fat": "4.5 g",
+      "carbs": "72 g",
+      "protein": "12 g"
+  },
+  "cola": {
+      "total_intake": "1 can (330ml)",
+      "total_calories": "139 cal",
+      "fat": "0 g",
+      "carbs": "35 g",
+      "protein": "0 g"
   }
+}
 
+const obj_arr = Object.keys(obj);
+var ans = 'World';
+ans = ans + ' Hello\n';
 
-const obj_arr = Object.keys(obj)
-obj_arr.forEach((Element) => console.log(obj[Element].total_calories))
+obj_arr.forEach((Element, index) => {
+  const item = `${index + 1}. ${Element}`;
+  const intake = `${obj[Element].total_intake}g`;
+  ans = ans + (`${item.padEnd(10)} ${intake.padStart(5)}\n`);
+});
+
+console.log(ans);

@@ -1,0 +1,39 @@
+
+-- 用户信息表，假设 age 和 gender 为必填项
+CREATE TYPE gender_enum AS ENUM ('male', 'female', 'other');
+
+CREATE TABLE user_info (
+    userid INT PRIMARY KEY,
+    daily_goal INT DEFAULT 2000,
+    age INT NOT NULL,
+    gender gender_enum NOT NULL,
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- 每日记录表，增加了 created_at 与 updated_at 字段以便记录创建和修改时间
+CREATE TABLE daily_hist (
+    id SERIAL PRIMARY KEY,
+    userid INT NOT NULL,
+    is_achieve BOOLEAN DEFAULT FALSE,
+    record_date DATE DEFAULT CURRENT_DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE (userid, record_date)
+);
+DROP TABLE intake_hist;
+-- 摄入记录表，增加了非负数检查约束以及 updated_at 字段
+CREATE TABLE intake_hist (
+    intake_id SERIAL PRIMARY KEY,
+    userid INT NOT NULL,
+    protein_intake INT NOT NULL CHECK (protein_intake >= 0),
+    fat_intake INT NOT NULL CHECK (fat_intake >= 0),
+    carb_intake INT NOT NULL CHECK (carb_intake >= 0),
+    total_cal INT NOT NULL CHECK (total_cal >= 0),
+    record_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- 可选：为 intake_hist 的 userid 添加索引（有助于提高基于 userid 的查询性能）
+CREATE INDEX idx_intake_hist_userid ON intake_hist(userid);
