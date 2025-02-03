@@ -31,14 +31,14 @@ const loginUser = async (email, password) => {
             throw new Error('The email is not register');
         }
         const user = result.rows[0];
-        
+        const name = user.username
         if (!user.is_verify) {
             throw new Error('Account is inactive. Please contact support.');
         }
 
         await verifyPassword(password, user.password);
         const token = generateToken(user);
-        return { message: 'Login successfully', token };
+        return { message: 'Login successfully', name , token };
        
     } catch (err) {
         throw new Error(err.message);

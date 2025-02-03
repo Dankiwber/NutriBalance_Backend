@@ -29,7 +29,7 @@ const getData = async (userid) => {
     try {
         const { today, start_date, end_date } = getCurrentWeekRange(); // 计算本周的起始日期
         
-        console.log("查询范围:", start_date, "到", end_date); // Debug 输出
+        console.log("查询范围:", start_date, "到", end_date); // Debug info
 
         // 执行 SQL 查询
         const weekly_cal = await pool.query(`
@@ -42,11 +42,11 @@ const getData = async (userid) => {
             FROM intake_hist
             WHERE userid = $1
             AND record_at >= $2
-            AND record_at <= $3
+            AND record_at <= $3::DATE + INTERVAL '1 day'
             GROUP BY day
             ORDER BY day;
         `, [userid, start_date, end_date]);
-
+            console.log(end_date)
         // 初始化每日摄入数据
         const date_arr = {};
         let today_intake = []; // 今日摄入数据
@@ -55,7 +55,7 @@ const getData = async (userid) => {
 
         while (temp_date <= end_date_obj) {  // 包含最后一天
             const formatted_date = temp_date.toISOString().split('T')[0]; // 格式化为 YYYY-MM-DD
-            date_arr[formatted_date] = 0; // 初始化为 0
+            date_arr[formatted_date] = '0'; // 初始化为 '0'
             temp_date.setDate(temp_date.getDate() + 1); // 增加一天
         }
 
@@ -83,5 +83,5 @@ const getData = async (userid) => {
         return [[], {}]; 
     }
 };
-
+getData(40)
 module.exports = { getData };
