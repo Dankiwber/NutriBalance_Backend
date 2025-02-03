@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { ERROR_MESSAGES } = require('../config/constants');
+const { ERROR_MESSAGES } = require('../config/chatbot_prompt');
 const { verifyResetCode, resetPassword, requestPasswordReset  } = require('../services/resetPassword');
 const { chatbot } = require('../services/deepseek_chatbot')
 // 点击forget password后访问的api

@@ -6,7 +6,7 @@ const {
   RESPONSE_PATTERNS,
   MODELS,
   ERROR_MESSAGES
-} = require('../config/constants');
+} = require('../config/chatbot_prompt');
 
 const parseNutritionData = (output) => {
   // 优先检查错误输入
