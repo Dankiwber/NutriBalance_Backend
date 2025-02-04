@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middlewares/authMiddleware'); // 引入中间件
-const { getData } = require('../services/getDatafromDB')
+const { getData, getInfo } = require('../services/getDatafromDB')
 
 router.get('/weekly_cal', authMiddleware, async (req, res) => {
     try {
@@ -19,6 +19,25 @@ router.get('/weekly_cal', authMiddleware, async (req, res) => {
         res.json({
             daily_intake: intake_data[0] || [], // 确保 daily_intake 是数组
             weekly_intake: intake_data[1] || {} // 确保 weekly_intake 是对象
+        });
+
+    } catch (err) {
+        console.error("API error:", err.message);
+        res.status(500).json({ error: "Server error. Please try again later." });
+    }
+});
+
+router.get('/user_info', authMiddleware, async (req, res) => {
+    try {
+        const userid = req.user?.id; // 确保 user 对象存在
+        if (!userid) {
+            return res.status(400).json({ error: "User ID is missing or invalid." });
+        }
+
+        const userinfo = await getInfo(userid);
+
+        res.json({
+            userinfo: userinfo
         });
 
     } catch (err) {

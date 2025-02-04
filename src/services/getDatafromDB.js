@@ -72,9 +72,6 @@ const getData = async (userid) => {
             }
         });
         
-
-        console.log("今日摄入:", today_intake);
-        console.log("每周摄入:", date_arr);
         
         return [today_intake, date_arr];
 
@@ -83,5 +80,23 @@ const getData = async (userid) => {
         return [[], {}]; 
     }
 };
-getData(40)
-module.exports = { getData };
+const getInfo = async (userid) => {
+    try {
+        const userinfo = await pool.query(`
+            SELECT daily_goal, age, gender 
+            FROM user_info 
+            where userid = $1;
+            `,[userid]);
+        const info = userinfo.rows[0]
+        if (Object.keys(info).length != 3){
+            throw new Error("database return format error")
+        }
+        return info
+        
+    }catch(err){
+        console.error("database checking fail", err.message);
+        return {};
+    }
+}
+getInfo(40)
+module.exports = { getData, getInfo};
