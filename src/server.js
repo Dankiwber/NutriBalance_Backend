@@ -5,10 +5,14 @@ const userRoutes = require('./routes/user'); // 引入用户路由
 const dataRoutes = require('./routes/user_data'); // 引入用户路由
 const pool = require('./config/db'); // 引入数据库连接
 require('dotenv').config(); 
-const cleanupUnverifiedUsers = require('./services/cleanUp');
+const cleanupUnverifiedUsers = require('./services/cleanup_ser/verification_cleanup');
+
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
+
+
 app.use(cors({
     origin: process.env.CORS_ORIGIN, 
 }));

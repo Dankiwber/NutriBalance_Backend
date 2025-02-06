@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db'); // 引入数据库连接
-const { registerUser } = require('../services/registerUser'); // 注意解构方式
-const { loginUser } = require('../services/loginUser');
+const { registerUser } = require('../services/user_auth/registerUser'); // 注意解构方式
+const { loginUser } = require('../services/user_auth/loginUser');
 const authMiddleware = require('../middlewares/authMiddleware'); // 引入中间件
-const { add, has } = require('../services/Token_blacklist'); // 引入黑名单工具
+const { add, has } = require('../services/cleanup_ser/Token_blacklist'); // 引入黑名单工具
 const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post('/logout', async (req, res) => {
@@ -84,12 +84,15 @@ router.get('/verify-email', async (req, res) => {
 
 // 示例受保护路由：获取用户个人信息
 router.get('/profile', authMiddleware, (req, res) => {
+    const { data } = req.body
+    console.log(data)
     // 通过中间件，req.user 中已经包含了解码后的用户信息
     res.json({
         message: 'Token is all good',
         user: req.user, // 返回用户信息
     });
 });
+
 // 获取所有用户数据
 router.post('/login', async (req, res) => {
     const { email, password } = req.body; // 从请求体中获取用户输入

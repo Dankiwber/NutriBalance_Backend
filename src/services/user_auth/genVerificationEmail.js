@@ -1,7 +1,7 @@
 
 const crypto = require('crypto');
-const pool = require('../config/db')
-const transporter = require('../config/VerifyEmail');
+const pool = require('../../config/db')
+const transporter = require('../../config/VerifyEmail');
 require('dotenv').config();
 const LOCAL_IP = process.env.LOCAL_IP;
 const VerifyToken = async (userId) => {

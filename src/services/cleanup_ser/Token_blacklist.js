@@ -1,4 +1,4 @@
-const redis = require('../config/redisClient'); // 引入 Redis 客户端
+const redis = require('../../config/redisClient'); // 引入 Redis 客户端
 
 module.exports = {
     // 添加令牌到黑名单

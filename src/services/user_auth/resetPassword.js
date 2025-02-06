@@ -1,7 +1,7 @@
 const crypto = require('crypto');
-const pool = require('../config/db');
-const redis = require('../config/redisClient');
-const transporter = require('../config/VerifyEmail');
+const pool = require('../../config/db');
+const redis = require('../../config/redisClient');
+const transporter = require('../../config/VerifyEmail');
 const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 require('dotenv').config();
 const LOCAL_IP = process.env.LOCAL_IP;

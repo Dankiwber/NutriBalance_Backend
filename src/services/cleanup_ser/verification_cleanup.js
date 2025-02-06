@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+const pool = require('../../config/db');
 
 // 定期清理未验证用户
 const cleanupUnverifiedUsers = async () => {

@@ -1,12 +1,12 @@
 // 修改后的 chatbot.js
-const pool = require('../config/db');
-const openai = require('../config/deepseek');
+const pool = require('../../config/db');
+const openai = require('../../config/deepseek');
 const {
   SYSTEM_PROMPT,
   RESPONSE_PATTERNS,
   MODELS,
   ERROR_MESSAGES
-} = require('../config/chatbot_prompt');
+} = require('../../config/chatbot_prompt');
 
 const parseNutritionData = (output) => {
   // 优先检查错误输入

@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+const pool = require('../../config/db');
 
 // 计算当前周的起始日期（从周日开始）
 const getCurrentWeekRange = () => {

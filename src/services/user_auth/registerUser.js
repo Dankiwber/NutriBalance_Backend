@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const pool = require('../config/db'); 
+const pool = require('../../config/db'); 
 const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 const { sendVerificationEmail } = require('./genVerificationEmail');
 

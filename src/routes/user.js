@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { ERROR_MESSAGES } = require('../config/chatbot_prompt');
-const { verifyResetCode, resetPassword, requestPasswordReset  } = require('../services/resetPassword');
-const { chatbot } = require('../services/deepseek_chatbot')
+const { verifyResetCode, resetPassword, requestPasswordReset  } = require('../services/user_auth/resetPassword');
+const { chatbot } = require('../services/chatbot_ser/deepseek_chatbot')
+const authMiddleware = require('../middlewares/authMiddleware'); // 引入中间件
 // 点击forget password后访问的api
 
 router.post('/forgot-password', async (req, res) => {
@@ -37,13 +38,12 @@ router.post('/reset-password', async (req, res) => {
     }
 });
 
-router.post('/query_process', async (req, res) => {
+router.post('/query_process', authMiddleware, async (req, res) => {
   const { query } = req.body;
   
   if (!query || typeof query !== 'string') {
     return res.status(400).json({ error: 'Invalid request format' });
   }
-
   try {
     const response = await chatbot(query);
     res.status(200).json(response);

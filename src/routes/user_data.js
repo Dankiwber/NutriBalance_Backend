@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middlewares/authMiddleware'); // 引入中间件
-const { getData, getInfo } = require('../services/getDatafromDB')
+const { getData, getInfo } = require('../services/database_ser/getDatafromDB')
 
 router.get('/weekly_cal', authMiddleware, async (req, res) => {
     try {
@@ -45,4 +45,15 @@ router.get('/user_info', authMiddleware, async (req, res) => {
         res.status(500).json({ error: "Server error. Please try again later." });
     }
 });
+
+router.post('/db_data_update', authMiddleware, async (req, res) => {
+    try{
+        const { data } = req.body;
+        const userid = req.user?.id;
+
+    }catch(err){
+        console.error("API error:", err.message);
+        res.status(500).json({ error: "Server error. Please try again later." });
+    }
+})
 module.exports = router;
