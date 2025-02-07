@@ -4,8 +4,11 @@ const jwt = require('jsonwebtoken');
 const pool = require('../config/db'); // 引入数据库连接
 const { registerUser } = require('../services/user_auth/registerUser'); // 注意解构方式
 const { loginUser } = require('../services/user_auth/loginUser');
-const authMiddleware = require('../middlewares/authMiddleware'); // 引入中间件
+const authMiddleware = require('../middlewares/authMiddleware'); // 引入auth中间件
 const { add, has } = require('../services/cleanup_ser/Token_blacklist'); // 引入黑名单工具
+const path = require('path'); // Node.js 模块，用于处理文件路径
+const { ERROR_MESSAGES } = require('../config/chatbot_prompt');
+const { verifyResetCode, resetPassword, requestPasswordReset  } = require('../services/user_auth/resetPassword');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post('/logout', async (req, res) => {
@@ -38,8 +41,6 @@ router.post('/logout', async (req, res) => {
         res.status(400).json({ error: 'Invalid or expired token' });
     }
 });
-
-const path = require('path'); // Node.js 模块，用于处理文件路径
 
 router.get('/verify-email', async (req, res) => {
     const { token } = req.query; // 从查询参数中获取令牌
@@ -81,8 +82,6 @@ router.get('/verify-email', async (req, res) => {
     }
 });
 
-
-// 示例受保护路由：获取用户个人信息
 router.get('/profile', authMiddleware, (req, res) => {
     const { data } = req.body
     console.log(data)
@@ -115,5 +114,36 @@ router.post('/register', async (req, res) => {
     }
 });
 
+router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        await requestPasswordReset(email);
+        res.status(200).json({ message: 'Password reset email sent.' });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+// 用于验证“重置验证码” 的api
+router.post('/verify-reset-code', async (req, res) => {
+    const { email, code } = req.body;
+    try {
+        const response = await verifyResetCode(email, code);
+        res.status(200).json(response);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+// “重置验证码” 通过验证后重设密码的api
+router.post('/reset-password', async (req, res) => {
+    const { email, newPassword } = req.body;
+    try {
+        const response = await resetPassword(email, newPassword);
+        res.status(200).json(response);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
 
 module.exports = router;

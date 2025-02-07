@@ -1,10 +1,3 @@
-const obj = {
-  "userinfo": {
-      "daily_goal": 2500,
-      "age": 29,
-      "gender": "male"
-  }
-}
+const obj1 = {"daily_intake": ["166", "298", "384", "3454"], "weekly_intake": {"2025-02-02": "2300", "2025-02-03": "1900", "2025-02-04": "2500", "2025-02-05": "1800", "2025-02-06": "3454", "2025-02-07": "2000", "2025-02-08": "2500"}}
+const obj2 = {"carb": 193, "fat": 6, "prot": 14, "total": 854}
 
-const obj_arr = Object.keys(obj);
-console.log(obj["userinfo"]['daily_goal'])

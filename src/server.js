@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors')
-const authRoutes = require('./routes/auth'); // 引入用户路由
-const userRoutes = require('./routes/user'); // 引入用户路由
+const authRoutes = require('./routes/auth'); // 引入用户路由\
 const dataRoutes = require('./routes/user_data'); // 引入用户路由
 const pool = require('./config/db'); // 引入数据库连接
 require('dotenv').config(); 
@@ -26,8 +25,8 @@ app.get('/', (req, res) => {
 
 // 挂载用户相关的路由
 app.use('/api', authRoutes);
-app.use('/api', userRoutes); 
 app.use('/data', dataRoutes); 
+
 app.get('/test-db', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW()');
@@ -37,9 +36,9 @@ app.get('/test-db', async (req, res) => {
         res.status(500).json({ error: 'Database connection failed' });
     }
 });
+
 setInterval(() => {
     cleanupUnverifiedUsers();
-    
 },  30 * 60 * 1000); // 每 60 分钟执行一次
 
 // 启动服务器
