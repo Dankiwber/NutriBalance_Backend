@@ -22,7 +22,6 @@ const insertData = async (record_update, current_intake, date, userid, daily_goa
 }
 const updateGoal = async (date, userid) => {
     try{
-        console.log("INNNN")
         const check_id = await pool.query(
             `SELECT id, is_achieve FROM daily_hist WHERE record_date = $1 AND userid = $2`,
             [date, userid]

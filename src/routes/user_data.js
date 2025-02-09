@@ -72,7 +72,6 @@ router.post('/db_data_update', authMiddleware, async (req, res) => {
     try{
         const { record_update, current_intake, date, daily_goal } = req.body;
         const userid = req.user?.id;
-        console.log(daily_goal)
         const response = await insertData(record_update, current_intake, date, userid, daily_goal)
         res.status(200).json(response);
         //const message = await insertData(record_update, current_intake, date, id, daily_goal)
